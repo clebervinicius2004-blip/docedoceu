@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Doce do Céu – Vendas</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF3FC;--card:#fff;--ink:#22264A;--mut:#6B7194;--line:#DCE3F3;--pink:#E0457B;--pinkbg:#FDE8F0;--sky:#CFE1FF;--butter:#FFE08A;--ok:#1E8E5A;--bad:#C93A3A;--on:#fff;
+color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13162B;--card:#1D2140;--ink:#EEF0FF;--mut:#9AA0C8;--line:#2E3360;--pink:#FF6B9D;--pinkbg:#3A2142;--sky:#2A3A72;--butter:#FFD166;--ok:#4CD494;--bad:#FF7A7A;--on:#1b1030;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13162B;--card:#1D2140;--ink:#EEF0FF;--mut:#9AA0C8;--line:#2E3360;--pink:#FF6B9D;--pinkbg:#3A2142;--sky:#2A3A72;--butter:#FFD166;--ok:#4CD494;--bad:#FF7A7A;--on:#1b1030;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 "DM Sans",system-ui,sans-serif;padding-bottom:90px}
+h1,h2,h3{font-family:"Bricolage Grotesque","DM Sans",sans-serif;margin:0}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--sky);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+header h1{font-size:22px;font-weight:800}
+.chip{font-size:13px;font-weight:700;padding:5px 11px;border-radius:99px;background:var(--card);border:1px solid var(--line)}
+.chip.on{background:var(--ok);color:var(--on);border-color:transparent}
+main{max-width:720px;margin:0 auto;padding:14px 14px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
+.prod{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:left;color:var(--ink);font:inherit;cursor:pointer;min-height:92px}
+.prod b{display:block;font-weight:700}
+.prod .pr{color:var(--pink);font-weight:800;font-size:18px;margin-top:4px;display:block}
+.prod small{color:var(--mut)}
+.prod:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.btn{font:inherit;font-weight:700;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+.btn.pri{background:var(--pink);color:var(--on);border-color:transparent}
+.btn.big{width:100%;padding:14px;font-size:17px}
+.btn.sm{padding:5px 11px}
+.btn.del{color:var(--bad)}
+.btn:disabled{opacity:.5}
+.qty{display:flex;align-items:center;gap:8px}
+.pays{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.pays .btn.sel{background:var(--butter);color:#3a2a00;border-color:transparent}
+.tot{display:flex;justify-content:space-between;font-family:"Bricolage Grotesque",sans-serif;font-size:24px;font-weight:800;margin:8px 0}
+.low{color:var(--bad);font-weight:700;font-size:13px}
+.mut{color:var(--mut);font-size:14px}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+.warn{background:var(--pinkbg);border-radius:12px;padding:12px;margin-bottom:12px}
+nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:6}
+nav button{font:inherit;font-size:13px;font-weight:700;background:none;border:0;color:var(--mut);padding:11px 0;cursor:pointer}
+nav button.act{color:var(--pink);box-shadow:inset 0 3px 0 var(--pink)}
+input{font:inherit;width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);margin:4px 0 10px}
+label{font-size:14px;font-weight:700}
+#modal{position:fixed;inset:0;background:rgba(10,12,30,.55);display:none;align-items:flex-end;justify-content:center;z-index:20}
+#modal.show{display:flex}
+#modal .box{background:var(--card);width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));max-height:90%;overflow:auto}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<header><h1>Doce do Céu</h1><span class="chip" id="chip"></span></header>
+<main id="v"></main>
+<nav id="nav"></nav>
+<div id="modal"></div><div id="toast"></div>
+<script>
+const KEY='doceceu_v1';
+const seed=()=>({products:[
+{id:'a1',name:'Brigadeiro gourmet',price:4.5,stock:50,min:10},
+{id:'a2',name:'Bolo de pote',price:12,stock:20,min:5},
+{id:'a3',name:'Fatia de torta',price:11,stock:15,min:4},
+{id:'a4',name:'Brownie',price:8,stock:25,min:6},
+{id:'a5',name:'Cookie',price:6,stock:30,min:8},
+{id:'a6',name:'Bolo inteiro',price:65,stock:5,min:2}],
+sales:[],cash:{open:false},closures:[]});
+let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.products)S=seed();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const R=v=>(+v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dt=t=>new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const $=id=>document.getElementById(id);
+const num=id=>parseFloat(String($(id).value).replace(',','.'))||0;
+let tab='sell',cart={},pay='Dinheiro';
+const TABS=[['sell','Vender'],['stock','Estoque'],['cash','Caixa'],['hist','Vendas']];
+const PAYS=['Dinheiro','Pix','Cartão'];
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+function modal(h){$('modal').innerHTML='<div class="box">'+h+'</div>';$('modal').classList.add('show')}
+function closeM(){$('modal').classList.remove('show')}
+$('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeM()});
+function go(t){tab=t;render()}
+const P=id=>S.products.find(p=>p.id===id);
+function sess(){
+  const c=S.cash,sl=S.sales.filter(s=>s.sess===c.id&&!s.void);
+  const by={Dinheiro:0,Pix:0,'Cartão':0};sl.forEach(s=>by[s.pay]+=s.total);
+  const mv=c.moves||[],sup=mv.filter(m=>m.type==='in').reduce((a,m)=>a+m.v,0),san=mv.filter(m=>m.type==='out').reduce((a,m)=>a+m.v,0);
+  return{sl,by,sup,san,total:by.Dinheiro+by.Pix+by['Cartão'],exp:c.initial+by.Dinheiro+sup-san}
+}
+function render(){
+  $('chip').textContent=S.cash.open?'Caixa aberto':'Caixa fechado';
+  $('chip').className='chip'+(S.cash.open?' on':'');
+  $('nav').innerHTML=TABS.map(t=>`<button class="${tab===t[0]?'act':''}" onclick="go('${t[0]}')">${t[1]}</button>`).join('');
+  $('v').innerHTML=({sell:vSell,stock:vStock,cash:vCash,hist:vHist})[tab]();
+}
+/* VENDER */
+function vSell(){
+  let h='';
+  if(!S.cash.open)h+='<div class="warn"><b>O caixa está fechado.</b><br>Abra o caixa para registrar vendas.<br><br><button class="btn pri" onclick="go(\'cash\')">Abrir caixa</button></div>';
+  if(!S.products.length)return h+'<div class="card mut">Nenhum produto cadastrado. Vá em Estoque e adicione o primeiro.</div>';
+  h+='<div class="grid">'+S.products.map(p=>{const n=cart[p.id]||0,off=!S.cash.open||p.stock-n<=0;
+    return `<button class="prod" ${off?'disabled':''} onclick="add('${p.id}')"><b>${esc(p.name)}</b><span class="pr">${R(p.price)}</span><small>${p.stock-n} em estoque${n?' · '+n+' no carrinho':''}</small></button>`}).join('')+'</div>';
+  const ids=Object.keys(cart);
+  if(ids.length){
+    const tot=ids.reduce((a,i)=>a+P(i).price*cart[i],0);
+    h+='<div class="card" style="margin-top:14px"><h3>Carrinho</h3>'+ids.map(i=>{const p=P(i);return `<div class="row"><span>${esc(p.name)}<br><span class="mut">${R(p.price*cart[i])}</span></span><span class="qty"><button class="btn sm" onclick="dec('${i}')">−</button><b>${cart[i]}</b><button class="btn sm" onclick="add('${i}')">+</button></span></div>`}).join('')+
+    `<div class="tot"><span>Total</span><span>${R(tot)}</span></div><div class="pays">${PAYS.map(m=>`<button class="btn ${pay===m?'sel':''}" onclick="setPay('${m}')">${m}</button>`).join('')}</div><button class="btn pri big" onclick="finish()">Finalizar venda</button><button class="btn big" style="margin-top:8px" onclick="cart={};render()">Limpar carrinho</button></div>`;
+  }
+  return h;
+}
+function add(i){const p=P(i);if((cart[i]||0)<p.stock){cart[i]=(cart[i]||0)+1;render()}else toast('Sem estoque suficiente')}
+function dec(i){cart[i]--;if(cart[i]<=0)delete cart[i];render()}
+function setPay(m){pay=m;render()}
+function finish(){
+  if(!S.cash.open)return toast('Abra o caixa primeiro');
+  const ids=Object.keys(cart);if(!ids.length)return;
+  for(const i of ids)if(P(i).stock<cart[i])return toast('Estoque insuficiente: '+P(i).name);
+  const items=ids.map(i=>({id:i,name:P(i).name,price:P(i).price,qty:cart[i]}));
+  items.forEach(it=>P(it.id).stock-=it.qty);
+  const total=items.reduce((a,it)=>a+it.price*it.qty,0);
+  S.sales.unshift({id:Date.now(),t:Date.now(),sess:S.cash.id,items,total,pay});
+  cart={};save();toast('Venda registrada: '+R(total));render();
+}
+/* ESTOQUE */
+function vStock(){
+  const low=S.products.filter(p=>p.stock<=p.min).length;
+  return `<button class="btn pri big" onclick="pForm()">Novo produto</button><div style="height:12px"></div>`+
+  (low?`<div class="warn"><b>${low} produto${low>1?'s':''} com estoque baixo</b></div>`:'')+
+  `<div class="card">`+(S.products.length?S.products.map(p=>`<div class="row"><span><b>${esc(p.name)}</b><br><span class="mut">${R(p.price)}</span>${p.stock<=p.min?' <span class="low">estoque baixo</span>':''}</span>
+  <span class="qty"><button class="btn sm" onclick="adj('${p.id}',-1)">−</button><b>${p.stock}</b><button class="btn sm" onclick="adj('${p.id}',1)">+</button><button class="btn sm" onclick="pForm('${p.id}')">Editar</button></span></div>`).join(''):'<span class="mut">Nenhum produto ainda.</span>')+'</div>';
+}
+function adj(i,d){const p=P(i);p.stock=Math.max(0,p.stock+d);save();render()}
+function pForm(id){
+  const p=id?P(id):{name:'',price:'',stock:'',min:5};
+  modal(`<h3>${id?'Editar produto':'Novo produto'}</h3><label>Nome</label><input id="f1" value="${esc(p.name)}">
+  <label>Preço (R$)</label><input id="f2" inputmode="decimal" value="${p.price}">
+  <label>Quantidade em estoque</label><input id="f3" inputmode="numeric" value="${p.stock}">
+  <label>Avisar quando restar até</label><input id="f4" inputmode="numeric" value="${p.min}">
+  <button class="btn pri big" onclick="pSave('${id||''}')">Salvar produto</button>
+  ${id?`<button class="btn del big" style="margin-top:8px" onclick="pDel('${id}')">Excluir produto</button>`:''}`);
+}
+function pSave(id){
+  const name=$('f1').value.trim();if(!name)return toast('Digite o nome do produto');
+  const d={name,price:num('f2'),stock:Math.max(0,Math.floor(num('f3'))),min:Math.max(0,Math.floor(num('f4')))};
+  if(id)Object.assign(P(id),d);else S.products.push({id:Date.now().toString(36),...d});
+  save();closeM();toast('Produto salvo');render();
+}
+function pDel(id){if(!confirm('Excluir este produto?'))return;S.products=S.products.filter(p=>p.id!==id);delete cart[id];save();closeM();render()}
+/* CAIXA */
+function vCash(){
+  if(!S.cash.open){
+    return `<div class="card"><h3>Abrir caixa</h3><p class="mut">Informe o valor em dinheiro que já está na gaveta (troco).</p><label>Valor inicial (R$)</label><input id="ini" inputmode="decimal" placeholder="0,00"><button class="btn pri big" onclick="openCash()">Abrir caixa</button></div>`+
+    `<h3 style="margin:16px 0 8px">Últimos fechamentos</h3><div class="card">`+(S.closures.length?S.closures.slice(0,10).map(c=>`<div class="row"><span>${dt(c.closedAt)}<br><span class="mut">Vendas ${R(c.total)}</span></span><span class="${Math.abs(c.diff)<.005?'pos':c.diff<0?'neg':'pos'}"><b>${Math.abs(c.diff)<.005?'Confere':(c.diff>0?'Sobra ':'Falta ')+R(Math.abs(c.diff))}</b></span></div>`).join(''):'<span class="mut">Nenhum fechamento ainda.</span>')+'</div>';
+  }
+  const d=sess(),mv=S.cash.moves||[];
+  return `<div class="card"><h3>Caixa aberto desde ${dt(S.cash.id)}</h3>
+  <div class="row"><span>Valor inicial</span><b>${R(S.cash.initial)}</b></div>
+  <div class="row"><span>Vendas em dinheiro</span><b>${R(d.by.Dinheiro)}</b></div>
+  <div class="row"><span>Vendas no Pix</span><b>${R(d.by.Pix)}</b></div>
+  <div class="row"><span>Vendas no cartão</span><b>${R(d.by['Cartão'])}</b></div>
+  <div class="row"><span>Entradas (suprimento)</span><b class="pos">${R(d.sup)}</b></div>
+  <div class="row"><span>Saídas (sangria)</span><b class="neg">${R(d.san)}</b></div>
+  <div class="tot"><span>Dinheiro esperado</span><span>${R(d.exp)}</span></div>
+  <div class="mut">${d.sl.length} venda${d.sl.length===1?'':'s'} · total vendido ${R(d.total)}</div></div>
+  <div class="grid" style="grid-template-columns:1fr 1fr"><button class="btn" onclick="mvForm('in')">Colocar dinheiro</button><button class="btn" onclick="mvForm('out')">Retirar dinheiro</button></div>
+  <button class="btn pri big" style="margin-top:10px" onclick="closeForm()">Fechar caixa</button>
+  ${mv.length?'<h3 style="margin:16px 0 8px">Movimentações</h3><div class="card">'+mv.map(m=>`<div class="row"><span>${esc(m.note||(m.type==='in'?'Entrada':'Saída'))}<br><span class="mut">${dt(m.t)}</span></span><b class="${m.type==='in'?'pos':'neg'}">${m.type==='in'?'+':'−'}${R(m.v)}</b></div>`).join('')+'</div>':''}`;
+}
+function openCash(){S.cash={open:true,id:Date.now(),initial:num('ini'),moves:[]};save();toast('Caixa aberto');render()}
+function mvForm(type){
+  modal(`<h3>${type==='in'?'Colocar dinheiro no caixa':'Retirar dinheiro do caixa'}</h3><label>Valor (R$)</label><input id="mv" inputmode="decimal"><label>Motivo</label><input id="mn" placeholder="${type==='in'?'Ex.: mais troco':'Ex.: compra de ingredientes'}"><button class="btn pri big" onclick="mvSave('${type}')">Salvar</button>`);
+}
+function mvSave(type){const v=num('mv');if(v<=0)return toast('Digite um valor maior que zero');S.cash.moves.unshift({type,v,note:$('mn').value.trim(),t:Date.now()});save();closeM();render()}
+function closeForm(){
+  const d=sess();
+  modal(`<h3>Fechar caixa</h3><p>Dinheiro esperado na gaveta: <b>${R(d.exp)}</b></p><label>Dinheiro contado (R$)</label><input id="cnt" inputmode="decimal"><button class="btn pri big" onclick="closeCash()">Fechar caixa</button>`);
+}
+function closeCash(){
+  const d=sess(),counted=num('cnt');
+  S.closures.unshift({closedAt:Date.now(),openedAt:S.cash.id,total:d.total,by:d.by,expected:d.exp,counted,diff:counted-d.exp});
+  S.cash={open:false};cart={};save();closeM();toast('Caixa fechado');render();
+}
+/* VENDAS */
+function vHist(){
+  const t0=new Date();t0.setHours(0,0,0,0);
+  const today=S.sales.filter(s=>s.t>=t0.getTime()&&!s.void);
+  const sum=today.reduce((a,s)=>a+s.total,0);
+  return `<div class="card"><h3>Hoje</h3><div class="tot"><span>${R(sum)}</span></div><span class="mut">${today.length} venda${today.length===1?'':'s'}</span></div>`+
+  `<div class="card">`+(S.sales.length?S.sales.slice(0,60).map(s=>`<div class="row" style="align-items:flex-start"><span ${s.void?'style="text-decoration:line-through;opacity:.6"':''}><b>${R(s.total)}</b> · ${s.pay}<br><span class="mut">${dt(s.t)} · ${s.items.map(i=>i.qty+'× '+esc(i.name)).join(', ')}</span></span>${s.void?'<span class="mut">Cancelada</span>':`<button class="btn sm del" onclick="cancelSale(${s.id})">Cancelar</button>`}</div>`).join(''):'<span class="mut">Nenhuma venda registrada ainda.</span>')+'</div>';
+}
+function cancelSale(id){
+  if(!confirm('Cancelar esta venda e devolver os itens ao estoque?'))return;
+  const s=S.sales.find(x=>x.id===id);s.void=true;
+  s.items.forEach(i=>{const p=P(i.id);if(p)p.stock+=i.qty});
+  save();toast('Venda cancelada');render();
+}
+render();
+</script>
+</body>
+</html>
